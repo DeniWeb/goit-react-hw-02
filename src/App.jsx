@@ -7,17 +7,19 @@ import Feedback from './components/Feedback/Feedback';
 import Notification from './components/Notification/Notification';
 
 const App = () => {
-  const [feedback, setFeedback] = useState({
-    good: 0,
-    neutral: 0,
-    bad: 0,
+  const [feedback, setFeedback] = useState(() => {
+    const savedFeedback = localStorage.getItem('feedbacks');
+
+    return savedFeedback
+      ? JSON.parse(savedFeedback)
+      : { good: 0, neutral: 0, bad: 0 };
   });
 
   const updateFeedback = feedbackType => {
-    setFeedback({
-      ...feedback,
+    setFeedback(prevFeedback => ({
+      ...prevFeedback,
       [feedbackType]: feedback[feedbackType] + 1,
-    });
+    }));
   };
 
   const resetFeedback = () => {
@@ -25,6 +27,10 @@ const App = () => {
   };
 
   const totalFeedback = feedback.good + feedback.neutral + feedback.bad;
+
+  useEffect(() => {
+    localStorage.setItem('feedbacks', JSON.stringify(feedback));
+  }, [feedback]);
 
   return (
     <>
